@@ -1,0 +1,122 @@
+% taken from https://github.com/benedictdudel/pandoc-letter-din5008
+\documentclass[
+    foldmarks=true,      % print foldmarks
+    foldmarks=BTm,       % show foldmarks top, middle, bottom
+    fromalign=right,     % letter head on the right
+    fromphone,           % show phone number
+    fromemail,           % show email
+    fromlogo,            % show logo in letter head
+    version=last         % latest version of KOMA letter
+]{scrlttr2}
+
+\usepackage[ngerman]{babel}
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+
+\usepackage{parskip}
+
+\usepackage{graphics}
+
+\usepackage{fontawesome}
+\usepackage{cmbright}
+
+\usepackage{booktabs}
+\usepackage{longtable}
+\usepackage{makecell}
+
+\usepackage[right]{eurosym}
+
+\makeatletter
+    \setlength{\@tempskipa}{-1.2cm}%
+    \@addtoplength{toaddrheight}{\@tempskipa}
+\makeatother
+
+\setlength{\oddsidemargin}{\useplength{toaddrhpos}}
+\addtolength{\oddsidemargin}{-1in}
+\setlength{\textwidth}{\useplength{firstheadwidth}}
+
+\setkomavar{firsthead}{%
+  \setlength{\tabcolsep}{0.1em}
+  \parbox{\linewidth}{\raggedleft
+  \begin{tabular}{rc}
+  \textbf{\usekomavar{fromname}} & \\
+    \makecell[rt]{\usekomavar{fromaddress}} & {\scriptsize  \faEnvelope}\\
+    \usekomavar{fromphone} & {\footnotesize \faPhone}\\
+    \usekomavar{fromemail} & {\footnotesize \faAt} \\
+    \footnotesize 0x1B91700F3C933041 & {\footnotesize \faKey} \\
+  \end{tabular}
+%    \textbf{\usekomavar{fromname}}\\
+%    \usekomavar{fromaddress}\\
+%    \vspace{.3em}
+%    {\footnotesize \faPhone} \usekomavar{fromphone}\\
+%    {\footnotesize \faEnvelope} \usekomavar{fromemail}\\
+%    {\footnotesize \faKey} 0x1B91700F3C933041
+  }%
+}
+\begin{document}
+    \renewcommand*{\raggedsignature}{\raggedright}
+    $if(return-address)$
+        \setkomavar{fromaddress}{
+            $for(return-address)$
+                $return-address$$sep$\\
+            $endfor$
+        }
+    $else$
+        \setkomavar{fromaddress}{
+            Margaretenstraße 50\\
+            20357 Hamburg, DE
+        }
+    $endif$
+    $if(phone)$
+        \setkomavar{fromphone}{$phone$}
+    $else$
+        \setkomavar{fromphone}{+49 160 7210334}
+    $endif$
+    $if(email)$
+        \setkomavar{fromemail}{$email$}
+    $else$
+        \setkomavar{fromemail}{peer@garstig.org}
+    $endif$
+    $if(pgp)$
+        \setkomavar{fromfax}[PGP-Key]{$pgp$}
+    $else$
+        \setkomavar{fromfax}[PGP-Key]{0x1B91700F3C933041}
+    $endif$
+
+    $if(author)$
+        \setkomavar{signature}{$author$}
+        \setkomavar{fromname}{$author$}
+    $else$
+        \setkomavar{signature}{Peer Springstübe}
+        \setkomavar{fromname}{Peer Springstübe}
+    $endif$
+
+    \setkomavar{date}{$date$}
+    $if(place)$
+        \setkomavar{place}{$place$}
+    $else$
+        \setkomavar{place}{$place$}
+    $endif$
+
+    \setkomavar{subject}{$subject$}
+
+    \begin{letter}{%
+        $for(address)$
+            $address$$sep$\\
+        $endfor$
+    }
+
+        \opening{$opening$}
+
+        $body$
+
+        \closing{$closing$}
+
+        \ps $postskriptum$
+
+        $if(encludes)$
+            \setkomavar*{enclseparator}{Anlage}
+            \encl{$encludes$}
+        $endif$
+    \end{letter}
+\end{document}
